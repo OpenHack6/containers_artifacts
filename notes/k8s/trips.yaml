@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: trips
+  namespace: trip
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: trips
+  template:
+    metadata:
+      labels:
+        app: trips
+    spec:
+      nodeSelector:
+        kubernetes.io/os: linux
+      containers:
+        - name: trips
+          image: registryvhk8886.azurecr.io/trips:v1
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256M
+            limits:
+              cpu: '1'
+              memory: 1G
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: trips-service
+  namespace: trip
+spec:
+  ports:
+    - targetPort: 80
+      name: port80
+      port: 80
+      protocol: TCP
+  selector:
+    app: trips

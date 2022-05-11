@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tripviewer
+  namespace: trip
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tripviewer
+  template:
+    metadata:
+      labels:
+        app: tripviewer
+    spec:
+      nodeSelector:
+        kubernetes.io/os: linux
+      containers:
+        - name: tripviewer
+          image: registryvhk8886.azurecr.io/tripviewer:v1
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256M
+            limits:
+              cpu: '1'
+              memory: 1G
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tripviewer-service
+  namespace: trip
+spec:
+  type: LoadBalancer
+  ports:
+    - targetPort: 80
+      name: port80
+      port: 80
+      protocol: TCP
+  selector:
+    app: tripviewer
